@@ -152,7 +152,7 @@
                     </button>
                 </form>
                 <div class="text-center mt-2 text-xs text-rose-400 font-light">
-                    مدعوم بالذكاء الاصطناعي (Gemini) | <span class="font-bold">من إعداد قيس جازي</span>
+                    <span class="font-bold">من إعداد قيس جازي</span>
                 </div>
             </div>
         </div>
@@ -170,7 +170,8 @@
         let currentImageMimeType = null;
 
         // Gemini API Configuration
-        const apiKey = ""; // سيتم ملؤها تلقائياً
+        // تنبيه هام: يجب وضع مفتاح API الخاص بك هنا بين علامتي التنصيص
+        const apiKey = "AIzaSyCD_CoBanF2aC5Qsu1rGrf56Lk7zdcDKV0"; // <--- ضع مفتاحك هنا (مثال: "AIzaSy...")
         const MODEL_TEXT = "gemini-2.5-flash-preview-09-2025";
 
         // System Prompt: شخصية قيس يتحدث مع رهف
@@ -254,7 +255,7 @@
                 </div>
                 <div class="flex-1 space-y-2 text-left">
                     <div class="flex flex-col items-end">
-                         <div class="text-gray-800 leading-relaxed bg-white border border-pink-100 p-4 rounded-2xl rounded-tl-none shadow-sm text-right">
+                         <div class="text-gray-800 leading-relaxed bg-white border border-pink-100 p-4 rounded-2xl rounded-tl-none sapihadow-sm text-right">
                             ${contentHtml}
                         </div>
                     </div>
