@@ -15,12 +15,18 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
 
+    console.log('[v0] Login attempt - username:', username)
+    console.log('[v0] Login attempt - password:', password)
+
     // Simple hardcoded authentication (يمكنك تحسينه لاحقاً)
     if (username === 'rahaf' && password === 'rahaf2025') {
+      console.log('[v0] Login successful, setting cookie')
       // Set auth cookie/session
       document.cookie = 'auth=true; path=/; max-age=86400' // 24 hours
+      console.log('[v0] Cookie set, redirecting to /chat')
       router.push('/chat')
     } else {
+      console.log('[v0] Login failed - incorrect credentials')
       setError('اسم المستخدم أو كلمة المرور غير صحيحة')
       setLoading(false)
     }
