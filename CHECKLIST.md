@@ -152,7 +152,7 @@
 ### إضافة Environment Variables
 **مهم جداً: أضف جميع المتغيرات قبل Deploy!**
 
-- [ ] `GEMINI_API_KEY` = `AIzaSyCD_CoBanF2aC5Qsu1rGrf56Lk7zdcDKV0`
+- [ ] `GEMINI_API_KEY` = `your_gemini_api_key_here`
 - [ ] `NEXT_PUBLIC_FIREBASE_API_KEY` = [قيمتك]
 - [ ] `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` = [قيمتك]
 - [ ] `NEXT_PUBLIC_FIREBASE_PROJECT_ID` = [قيمتك]
@@ -190,7 +190,7 @@
 - [ ] إرسال رسالة نصية - تعمل ✅
 - [ ] رفع صورة - يعمل ✅
 - [ ] الردود تظهر بشكل صحيح ✅
-- [ ] Markdown rendering يعمل ✅
+- [ ] Markdown rendering يعم�� ✅
 
 ### Firebase على Production
 - [ ] فتح Firebase Console

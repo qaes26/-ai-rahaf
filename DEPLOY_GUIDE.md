@@ -65,7 +65,7 @@ git push origin main
 
 ```
 Name: GEMINI_API_KEY
-Value: AIzaSyCD_CoBanF2aC5Qsu1rGrf56Lk7zdcDKV0
+Value: your_gemini_api_key_here
 ```
 
 ```

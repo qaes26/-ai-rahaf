@@ -11,7 +11,7 @@
 **المشكلة السابقة:**
 ```javascript
 // في index.html - كان API Key مكشوف!
-const API_KEY = "AIzaSyCD_CoBanF2aC5Qsu1rGrf56Lk7zdcDKV0";
+const API_KEY = "your_exposed_api_key"; // مشكلة أمنية!
 ```
 
 **الحل الجديد:**

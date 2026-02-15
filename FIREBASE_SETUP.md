@@ -82,8 +82,8 @@
 افتح ملف `.env.local` في مشروعك وضع القيم كالتالي:
 
 ```bash
-# Gemini API Key (موجود مسبقاً)
-GEMINI_API_KEY=AIzaSyCD_CoBanF2aC5Qsu1rGrf56Lk7zdcDKV0
+# Gemini API Key (ضع مفتاحك هنا)
+GEMINI_API_KEY=your_gemini_api_key_here
 
 # ضع قيم Firebase هنا (من الخطوة السابقة)
 NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyABC123...
