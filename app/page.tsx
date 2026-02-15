@@ -7,14 +7,7 @@ export default function HomePage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Check if user is authenticated
-    const authCookie = document.cookie.split('; ').find(row => row.startsWith('auth='))
-    
-    if (authCookie) {
-      router.push('/chat')
-    } else {
-      router.push('/login')
-    }
+    router.push('/chat')
   }, [router])
 
   return (

@@ -19,13 +19,6 @@ export default function AdminPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Check authentication
-    const authCookie = document.cookie.split('; ').find(row => row.startsWith('auth='))
-    if (!authCookie) {
-      router.push('/login')
-      return
-    }
-
     // Fetch conversations from Supabase
     const fetchConversations = async () => {
       try {
@@ -88,25 +81,13 @@ export default function AdminPage() {
                 <p className="text-sm text-rose-600">سجلات المحادثات مع رهف</p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => router.push('/chat')}
-                className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all text-sm"
-              >
-                <i className="fa-solid fa-comment ml-2"></i>
-                المحادثة
-              </button>
-              <button
-                onClick={() => {
-                  document.cookie = 'auth=; path=/; max-age=0'
-                  router.push('/login')
-                }}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:shadow-lg transition-all text-sm"
-              >
-                <i className="fa-solid fa-right-from-bracket ml-2"></i>
-                خروج
-              </button>
-            </div>
+            <button
+              onClick={() => router.push('/chat')}
+              className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all text-sm"
+            >
+              <i className="fa-solid fa-comment ml-2"></i>
+              المحادثة
+            </button>
           </div>
         </div>
 

@@ -26,19 +26,6 @@ export default function ChatPage() {
   
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const router = useRouter()
-
-  // Check authentication
-  useEffect(() => {
-    const authCookie = document.cookie.split('; ').find(row => row.startsWith('auth='))
-    console.log('[v0] Checking auth cookie:', authCookie)
-    if (!authCookie || !authCookie.includes('auth=true')) {
-      console.log('[v0] No valid auth cookie found, redirecting to login')
-      router.push('/login')
-    } else {
-      console.log('[v0] Auth cookie valid, user authenticated')
-    }
-  }, [router])
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -191,11 +178,6 @@ export default function ChatPage() {
     }
   }
 
-  const handleLogout = () => {
-    document.cookie = 'auth=; path=/; max-age=0'
-    router.push('/login')
-  }
-
   return (
     <div className="h-screen flex overflow-hidden text-gray-800">
       {/* Sidebar */}
@@ -226,14 +208,6 @@ export default function ChatPage() {
           <button className="w-full text-right p-3 rounded-lg hover:bg-white/60 transition-colors flex items-center gap-3 text-sm text-rose-800 group">
             <i className="fa-solid fa-music text-rose-400"></i>
             أغنيتنا المفضلة
-          </button>
-          
-          <button 
-            onClick={handleLogout}
-            className="w-full text-right p-3 rounded-lg hover:bg-red-100 transition-colors flex items-center gap-3 text-sm text-red-600 group mt-4"
-          >
-            <i className="fa-solid fa-right-from-bracket text-red-500"></i>
-            تسجيل الخروج
           </button>
         </div>
 
