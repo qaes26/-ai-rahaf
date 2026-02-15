@@ -27,24 +27,35 @@ export default function AdminPage() {
       return
     }
 
-    // Fetch conversations from Firebase
-    const q = query(
-      collection(db, 'conversations'),
-      orderBy('timestamp', 'desc'),
-      limit(100)
-    )
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Conversation[]
-      
-      setConversations(data)
+    if (!db) {
+      console.warn('[v0] Firebase not configured')
       setLoading(false)
-    })
+      return
+    }
 
-    return () => unsubscribe()
+    // Fetch conversations from Firebase
+    try {
+      const q = query(
+        collection(db, 'conversations'),
+        orderBy('timestamp', 'desc'),
+        limit(100)
+      )
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const data = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Conversation[]
+        
+        setConversations(data)
+        setLoading(false)
+      })
+
+      return () => unsubscribe()
+    } catch (error) {
+      console.error('[v0] Firebase error:', error)
+      setLoading(false)
+    }
   }, [router])
 
   const formatDate = (timestamp: any) => {

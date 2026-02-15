@@ -57,6 +57,10 @@ export default function ChatPage() {
   }
 
   const saveMessageToFirebase = async (userMessage: string, aiResponse: string, hasImage: boolean) => {
+    if (!db) {
+      console.warn('[v0] Firebase not configured, skipping save')
+      return
+    }
     try {
       await addDoc(collection(db, 'conversations'), {
         userMessage,
