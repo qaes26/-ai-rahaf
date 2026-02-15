@@ -3,8 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { marked } from 'marked'
-import { db } from '@/lib/firebase'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { supabase } from '@/lib/supabase'
 
 interface Message {
   role: 'user' | 'ai'
@@ -27,15 +26,6 @@ export default function ChatPage() {
   
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const router = useRouter()
-
-  // Check authentication
-  useEffect(() => {
-    const authCookie = document.cookie.split('; ').find(row => row.startsWith('auth='))
-    if (!authCookie) {
-      router.push('/login')
-    }
-  }, [router])
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -56,21 +46,24 @@ export default function ChatPage() {
     setTimeout(() => heart.remove(), 2000)
   }
 
-  const saveMessageToFirebase = async (userMessage: string, aiResponse: string, hasImage: boolean) => {
-    if (!db) {
-      console.warn('[v0] Firebase not configured, skipping save')
-      return
-    }
+  const saveMessageToSupabase = async (userMessage: string, aiResponse: string, hasImage: boolean) => {
     try {
-      await addDoc(collection(db, 'conversations'), {
-        userMessage,
-        aiResponse,
-        hasImage,
-        timestamp: serverTimestamp(),
-        user: 'rahaf'
-      })
+      const { error } = await supabase
+        .from('conversations')
+        .insert([
+          {
+            user_message: userMessage,
+            ai_response: aiResponse,
+            has_image: hasImage,
+            user_name: 'rahaf'
+          }
+        ])
+      
+      if (error) {
+        console.error('[v0] Error saving to Supabase:', error)
+      }
     } catch (error) {
-      console.error('[v0] Error saving to Firebase:', error)
+      console.error('[v0] Error saving to Supabase:', error)
     }
   }
 
@@ -141,8 +134,8 @@ export default function ChatPage() {
       // Add AI response
       setMessages(prev => [...prev, { role: 'ai', text: data.response }])
       
-      // Save to Firebase
-      await saveMessageToFirebase(text, data.response, hasImage)
+      // Save to Supabase
+      await saveMessageToSupabase(text, data.response, hasImage)
 
       // Create hearts effect
       setTimeout(() => {
@@ -177,17 +170,12 @@ export default function ChatPage() {
 
       const data = await response.json()
       setMessages(prev => [...prev, { role: 'ai', text: data.response }])
-      await saveMessageToFirebase(prompt, data.response, false)
+      await saveMessageToSupabase(prompt, data.response, false)
     } catch (error) {
       setMessages(prev => [...prev, { role: 'ai', text: 'حبي لك أكبر من كل الكلمات.. ❤️' }])
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleLogout = () => {
-    document.cookie = 'auth=; path=/; max-age=0'
-    router.push('/login')
   }
 
   return (
@@ -220,14 +208,6 @@ export default function ChatPage() {
           <button className="w-full text-right p-3 rounded-lg hover:bg-white/60 transition-colors flex items-center gap-3 text-sm text-rose-800 group">
             <i className="fa-solid fa-music text-rose-400"></i>
             أغنيتنا المفضلة
-          </button>
-          
-          <button 
-            onClick={handleLogout}
-            className="w-full text-right p-3 rounded-lg hover:bg-red-100 transition-colors flex items-center gap-3 text-sm text-red-600 group mt-4"
-          >
-            <i className="fa-solid fa-right-from-bracket text-red-500"></i>
-            تسجيل الخروج
           </button>
         </div>
 

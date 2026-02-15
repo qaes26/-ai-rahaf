@@ -2,16 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { db } from '@/lib/firebase'
-import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore'
+import { supabase } from '@/lib/supabase'
 
 interface Conversation {
   id: string
-  userMessage: string
-  aiResponse: string
-  hasImage: boolean
-  timestamp: any
-  user: string
+  user_message: string
+  ai_response: string
+  has_image: boolean
+  created_at: string
+  user_name: string
 }
 
 export default function AdminPage() {
@@ -20,47 +19,47 @@ export default function AdminPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Check authentication
-    const authCookie = document.cookie.split('; ').find(row => row.startsWith('auth='))
-    if (!authCookie) {
-      router.push('/login')
-      return
-    }
+    // Fetch conversations from Supabase
+    const fetchConversations = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('conversations')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(100)
 
-    if (!db) {
-      console.warn('[v0] Firebase not configured')
-      setLoading(false)
-      return
-    }
+        if (error) {
+          console.error('[v0] Supabase error:', error)
+          setLoading(false)
+          return
+        }
 
-    // Fetch conversations from Firebase
-    try {
-      const q = query(
-        collection(db, 'conversations'),
-        orderBy('timestamp', 'desc'),
-        limit(100)
-      )
-
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const data = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Conversation[]
-        
-        setConversations(data)
+        setConversations(data || [])
         setLoading(false)
-      })
+      } catch (error) {
+        console.error('[v0] Supabase error:', error)
+        setLoading(false)
+      }
+    }
 
-      return () => unsubscribe()
-    } catch (error) {
-      console.error('[v0] Firebase error:', error)
-      setLoading(false)
+    fetchConversations()
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('conversations')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, () => {
+        fetchConversations()
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
     }
   }, [router])
 
-  const formatDate = (timestamp: any) => {
-    if (!timestamp) return 'الآن'
-    const date = timestamp.toDate()
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'الآن'
+    const date = new Date(dateString)
     return new Intl.DateTimeFormat('ar-SA', {
       dateStyle: 'medium',
       timeStyle: 'short'
@@ -82,25 +81,13 @@ export default function AdminPage() {
                 <p className="text-sm text-rose-600">سجلات المحادثات مع رهف</p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => router.push('/chat')}
-                className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all text-sm"
-              >
-                <i className="fa-solid fa-comment ml-2"></i>
-                المحادثة
-              </button>
-              <button
-                onClick={() => {
-                  document.cookie = 'auth=; path=/; max-age=0'
-                  router.push('/login')
-                }}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:shadow-lg transition-all text-sm"
-              >
-                <i className="fa-solid fa-right-from-bracket ml-2"></i>
-                خروج
-              </button>
-            </div>
+            <button
+              onClick={() => router.push('/chat')}
+              className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all text-sm"
+            >
+              <i className="fa-solid fa-comment ml-2"></i>
+              المحادثة
+            </button>
           </div>
         </div>
 
@@ -123,7 +110,7 @@ export default function AdminPage() {
               <div>
                 <p className="text-sm text-rose-600 mb-1">مع صور</p>
                 <p className="text-3xl font-bold text-rose-900">
-                  {conversations.filter(c => c.hasImage).length}
+                  {conversations.filter(c => c.has_image).length}
                 </p>
               </div>
               <div className="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center">
@@ -137,7 +124,7 @@ export default function AdminPage() {
               <div>
                 <p className="text-sm text-rose-600 mb-1">نصوص فقط</p>
                 <p className="text-3xl font-bold text-rose-900">
-                  {conversations.filter(c => !c.hasImage).length}
+                  {conversations.filter(c => !c.has_image).length}
                 </p>
               </div>
               <div className="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center">
@@ -176,8 +163,8 @@ export default function AdminPage() {
                       <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center">
                         <i className="fa-solid fa-user text-pink-500 text-sm"></i>
                       </div>
-                      <span className="font-bold text-rose-900 text-sm">{conv.user}</span>
-                      {conv.hasImage && (
+                      <span className="font-bold text-rose-900 text-sm">{conv.user_name}</span>
+                      {conv.has_image && (
                         <span className="px-2 py-1 bg-rose-100 text-rose-600 rounded-full text-xs">
                           <i className="fa-solid fa-image ml-1"></i>
                           صورة
@@ -185,19 +172,19 @@ export default function AdminPage() {
                       )}
                     </div>
                     <span className="text-xs text-rose-400">
-                      {formatDate(conv.timestamp)}
+                      {formatDate(conv.created_at)}
                     </span>
                   </div>
 
                   <div className="space-y-3">
                     <div className="bg-white p-3 rounded-lg border border-pink-100">
                       <p className="text-xs text-rose-500 font-semibold mb-1">رهف:</p>
-                      <p className="text-gray-700 text-sm">{conv.userMessage}</p>
+                      <p className="text-gray-700 text-sm">{conv.user_message}</p>
                     </div>
 
                     <div className="bg-gradient-to-r from-rose-500 to-pink-600 p-3 rounded-lg">
                       <p className="text-xs text-white/80 font-semibold mb-1">قيس GPT:</p>
-                      <p className="text-white text-sm">{conv.aiResponse}</p>
+                      <p className="text-white text-sm">{conv.ai_response}</p>
                     </div>
                   </div>
                 </div>
