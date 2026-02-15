@@ -46,7 +46,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const MODEL_TEXT = "gemini-2.0-flash-exp"
+    // تم التعديل هنا للنسخة المستقرة والمضمونة
+    const MODEL_TEXT = "gemini-1.5-flash"
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_TEXT}:generateContent?key=${apiKey}`
     
     const parts: any[] = []
@@ -72,6 +73,8 @@ export async function POST(req: NextRequest) {
     })
 
     if (!response.ok) {
+      const errorDetails = await response.json()
+      console.error('Gemini API Error Details:', errorDetails)
       throw new Error(`Gemini API error: ${response.status}`)
     }
 
@@ -83,8 +86,8 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('[v0] Gemini API Error:', error)
     return NextResponse.json(
-      { error: 'حبيبتي رهف، النت فصل بس قلبي لسا موصول فيكِ ❤️' },
-      { status: 500 }
+      { response: 'حبيبتي رهف، النت فصل بس قلبي لسا موصول فيكِ ❤️' },
+      { status: 200 } // غيرناها لـ 200 عشان تظهر الرسالة بالمحادثة بدون ما يعتبرها المتصفح خطأ سيرفر
     )
   }
 }
