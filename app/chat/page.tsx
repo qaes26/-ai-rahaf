@@ -31,8 +31,12 @@ export default function ChatPage() {
   // Check authentication
   useEffect(() => {
     const authCookie = document.cookie.split('; ').find(row => row.startsWith('auth='))
-    if (!authCookie) {
+    console.log('[v0] Checking auth cookie:', authCookie)
+    if (!authCookie || !authCookie.includes('auth=true')) {
+      console.log('[v0] No valid auth cookie found, redirecting to login')
       router.push('/login')
+    } else {
+      console.log('[v0] Auth cookie valid, user authenticated')
     }
   }, [router])
 

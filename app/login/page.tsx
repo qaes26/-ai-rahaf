@@ -13,16 +13,27 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setLoading(true)
+    
+    console.log('[v0] Login attempt - username:', username, '| password length:', password.length)
     
     // Simple hardcoded authentication
     if (username.trim() === 'rahaf' && password === 'rahaf2025') {
+      console.log('[v0] Credentials valid, setting cookie')
       // Set auth cookie/session
       document.cookie = 'auth=true; path=/; max-age=86400; SameSite=Lax'
       
-      // Redirect immediately
-      window.location.href = '/chat'
+      console.log('[v0] Cookie set:', document.cookie)
+      
+      // Small delay then redirect
+      setTimeout(() => {
+        console.log('[v0] Redirecting to /chat')
+        window.location.href = '/chat'
+      }, 500)
     } else {
+      console.log('[v0] Invalid credentials')
       setError('اسم المستخدم أو كلمة المرور غير صحيحة')
+      setLoading(false)
     }
   }
 
