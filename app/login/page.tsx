@@ -74,9 +74,17 @@ export default function LoginPage() {
 
           {error && (
             <div className="p-3 bg-red-100 border border-red-300 text-red-700 rounded-xl text-sm text-center">
+              <i className="fa-solid fa-exclamation-circle ml-1"></i>
               {error}
             </div>
           )}
+
+          <div className="p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl text-xs text-center">
+            <i className="fa-solid fa-info-circle ml-1"></i>
+            <div className="font-bold mb-1">معلومات تسجيل الدخول:</div>
+            <div>اسم المستخدم: <span className="font-mono bg-blue-100 px-2 py-1 rounded">rahaf</span></div>
+            <div>كلمة المرور: <span className="font-mono bg-blue-100 px-2 py-1 rounded">rahaf2025</span></div>
+          </div>
 
           <button
             type="submit"
